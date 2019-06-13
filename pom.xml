@@ -61,6 +61,23 @@
 			<version>2.8.5</version>
 		</dependency>
 		<dependency>
+			<groupId>com.github.wxpay</groupId>
+			<artifactId>wxpay-sdk</artifactId>
+			<version>0.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.alipay.sdk</groupId>
+			<artifactId>alipay-sdk-java</artifactId>
+			<version>3.3.87.ALL</version>
+		</dependency>
+		<dependency>
+			<groupId>com.alipay.sdk</groupId>
+			<artifactId>alipay-trade-sdk</artifactId>
+			<version>20161215</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/lib/alipay-trade-sdk.jar</systemPath>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>3.8.1</version>
