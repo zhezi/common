@@ -26,8 +26,6 @@ import okhttp3.RequestBody;
 public class VhallUtil {
 	private static Logger log = Logger.getLogger(VhallUtil.class);
 	public static String host="http://api.yun.vhall.com/api/v1";
-	public static String AppID ="0d6a9f1e";
-	public static String SecretKey ="0a0f579c415371db1bcb27c6dbeb8c31";
 	
 	private static Gson gson;
 	
@@ -40,13 +38,13 @@ public class VhallUtil {
 	 * 创建直播间
 	 * @return
 	 */
-	public static VhallResult<RoomInfo> createRoom() {
+	public static VhallResult<RoomInfo> createRoom(String appId,String secretKey) {
 		try {
 			String api=host+"/room/create";
 			Map<String,String> map=new HashMap<String,String>();
-			map.put("app_id", AppID);
+			map.put("app_id", appId);
 			map.put("signed_at", String.valueOf(new Date().getTime()));
-			api+=sign(map);
+			api+=sign(map,secretKey);
 			String json=OkHttpUtils.get(api);
 			log.info(json);
 			if(StringUtils.isEmpty(json))return null;
@@ -64,7 +62,7 @@ public class VhallUtil {
 	 * @param expire_time过期时间, 格式: 2017/01/01 00:00:00
 	 * @return
 	 */
-	public static VhallResult<PushInfo> getPushInfo(String roomId) {
+	public static VhallResult<PushInfo> getPushInfo(String appId,String secretKey,String roomId) {
 		try {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(new Date());
@@ -73,11 +71,11 @@ public class VhallUtil {
 			String expireTime = DateFormatUtils.format(date, "yyyy/MM/dd HH:mm:ss");
 			String api=host+"/room/get-push-info";
 			Map<String,String> map=new HashMap<String,String>();
-			map.put("app_id", AppID);
+			map.put("app_id", appId);
 			map.put("signed_at", String.valueOf(new Date().getTime()));
 			map.put("room_id", roomId);
 			map.put("expire_time", expireTime);//默认8小时
-			api+=sign(map);
+			api+=sign(map,secretKey);
 			String json=OkHttpUtils.get(api);
 			log.info(json);
 			if(StringUtils.isEmpty(json))return null;
@@ -89,7 +87,7 @@ public class VhallUtil {
 		}
 	}
 	
-	private static String sign(Map<String,String> map) {
+	private static String sign(Map<String,String> map,String secretKey) {
 		String url=null;
 		StringBuffer sb=new StringBuffer();
 		for(String k:kSort(map).keySet()) {
@@ -97,17 +95,17 @@ public class VhallUtil {
 			if(url==null)url="?";else url+="&";
 			url+=k+"="+map.get(k);
 		}
-		String sign=DigestUtils.md5DigestAsHex((SecretKey+sb.toString()+SecretKey).getBytes());
+		String sign=DigestUtils.md5DigestAsHex((secretKey+sb.toString()+secretKey).getBytes());
 		url+="&sign="+sign;
 		return url;
 	}
 	
-	private static String getSign(Map<String,String> map) {
+	private static String getSign(Map<String,String> map,String secretKey) {
 		StringBuffer sb=new StringBuffer();
 		for(String k:kSort(map).keySet()) {
 			sb.append(k+map.get(k));
 		}
-		String sign=DigestUtils.md5DigestAsHex((SecretKey+sb.toString()+SecretKey).getBytes());
+		String sign=DigestUtils.md5DigestAsHex((secretKey+sb.toString()+secretKey).getBytes());
 		return sign;
 	}
 	
@@ -126,19 +124,19 @@ public class VhallUtil {
 	 * @param roomId
 	 * @return
 	 */
-	public static VhallResult<WaterMark> createWatermark(File file) {
+	public static VhallResult<WaterMark> createWatermark(String appId,String secretKey,File file) {
 		try {
 			String api=host+"/watermark/create";
 			String signed_at=String.valueOf(new Date().getTime());
 			Map<String,String> map=new HashMap<String,String>();
-			map.put("app_id", AppID);
+			map.put("app_id", appId);
 			map.put("signed_at",signed_at );
 			map.put("watermark_name", "水印");
 			map.put("watermark_positiontype", "2");
-			String sign=getSign(map);
+			String sign=getSign(map,secretKey);
 	        RequestBody requestBody = new MultipartBody.Builder()
 	        	.setType(MultipartBody.FORM)
-	        	.addFormDataPart("app_id", AppID)
+	        	.addFormDataPart("app_id", appId)
 	        	.addFormDataPart("signed_at", signed_at)
 	        	.addFormDataPart("sign", sign)
 	        	.addFormDataPart("watermark_name", "水印")
