@@ -8,10 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.log4j.Logger;
-import org.springframework.util.DigestUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -95,7 +95,7 @@ public class VhallUtil {
 			if(url==null)url="?";else url+="&";
 			url+=k+"="+map.get(k);
 		}
-		String sign=DigestUtils.md5DigestAsHex((secretKey+sb.toString()+secretKey).getBytes());
+		String sign=DigestUtils.md5Hex(secretKey+sb.toString()+secretKey);
 		url+="&sign="+sign;
 		return url;
 	}
@@ -105,7 +105,7 @@ public class VhallUtil {
 		for(String k:kSort(map).keySet()) {
 			sb.append(k+map.get(k));
 		}
-		String sign=DigestUtils.md5DigestAsHex((secretKey+sb.toString()+secretKey).getBytes());
+		String sign=DigestUtils.md5Hex(secretKey+sb.toString()+secretKey);
 		return sign;
 	}
 	
